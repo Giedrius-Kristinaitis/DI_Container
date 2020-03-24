@@ -4,8 +4,8 @@
 * If any constructor arguments are registered, the constructor MUST be annotated with @Parameters annotation listing all parameter names
 * If stack overflow error occurs, your classes are bad, because they depend on each other and cannot be created without one another
 * If you need primitive types in a constructor, use primitive type wrapper types instead, e.g. Integer instead of int
-* Preferences are registered in a class that extends AbstractPreferenceRegistry inside initialize() method
-* Arguments are registered in a class that extends AbstractArgumentRegistry inside initialize() method
+* Preferences are registered in a class that extends AbstractPreferenceRegistry inside initialize() method, or by implementing PreferenceRegistryInterface
+* Arguments are registered in a class that extends AbstractArgumentRegistry inside initialize() method, or by implementing ArgumentRegistryInterface
 * If a class has a no-parameter constructor it will be used instead of other constructors
 * Registering preferences for concrete types is not necessary - concrete types will automatically be instantiated given they have a constructor that does not require registered arguments and constructor types can be instantiated
 * If no arguments are being registered, create ObjectManager like this: new ObjectManager(<preference_registry>, null)
