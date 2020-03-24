@@ -1,6 +1,6 @@
 # Dependency injection container
 ## Usage Notes
-* Works for any classes that can be accessed (including inner classes)
+* Works for any class that can be accessed (including inner classes) and has registered or instantiable parameters
 * If any constructor arguments are registered, the constructor MUST be annotated with @Parameters annotation listing all parameter names
 * If stack overflow error occurs, your classes are bad, because they depend on each other and cannot be created without one another
 * If you need primitive types in a constructor, use primitive type wrapper types instead, e.g. Integer instead of int
