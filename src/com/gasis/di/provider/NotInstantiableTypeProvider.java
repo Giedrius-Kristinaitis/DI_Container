@@ -2,7 +2,7 @@ package com.gasis.di.provider;
 
 public class NotInstantiableTypeProvider implements TypeProviderInterface {
 
-    private static final Class<?>[] PRIMITIVE_TYPES = {
+    private static final Class<?>[] NOT_INSTANTIABLE_TYPES = {
             Byte.class,
             Short.class,
             Integer.class,
@@ -24,6 +24,6 @@ public class NotInstantiableTypeProvider implements TypeProviderInterface {
 
     @Override
     public Class<?>[] getTypes() {
-        return PRIMITIVE_TYPES;
+        return NOT_INSTANTIABLE_TYPES;
     }
 }
