@@ -12,20 +12,26 @@ public class ArgumentResolver implements ResolverInterface<Constructor<?>, Objec
 
     private final ObjectManagerInterface objectManager;
     private final ArgumentRegistryInterface argumentRegistry;
+    private final ResolverInterface<Constructor<?>, String[]> parameterNameResolver;
 
-    public ArgumentResolver(ObjectManagerInterface objectManager, ArgumentRegistryInterface argumentRegistry) {
+    public ArgumentResolver(ObjectManagerInterface objectManager, ArgumentRegistryInterface argumentRegistry, ResolverInterface<Constructor<?>, String[]> parameterNameResolver) {
         this.objectManager = objectManager;
         this.argumentRegistry = argumentRegistry;
+        this.parameterNameResolver = parameterNameResolver;
     }
 
     @Override
     public Object[] resolve(Constructor<?> constructor) {
         List<Object> arguments = new ArrayList<Object>();
         Parameter[] parameters = constructor.getParameters();
+        String[] parameterNames = parameterNameResolver.resolve(constructor);
 
-        for (Parameter parameter : parameters) {
-            if (argumentRegistry.hasArgumentRegistered(constructor.getDeclaringClass(), parameter.getName())) {
-                arguments.add(argumentRegistry.getArgument(constructor.getDeclaringClass(), parameter.getName()));
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            String parameterName = parameterNames != null ? parameterNames[i] : null;
+
+            if (parameterName != null && argumentRegistry.hasArgumentRegistered(constructor.getDeclaringClass(), parameterName)) {
+                arguments.add(argumentRegistry.getArgument(constructor.getDeclaringClass(), parameterName));
                 continue;
             }
 

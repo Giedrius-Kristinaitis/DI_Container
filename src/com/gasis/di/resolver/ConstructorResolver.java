@@ -1,8 +1,8 @@
 package com.gasis.di.resolver;
 
+import com.gasis.di.provider.TypeProviderInterface;
 import com.gasis.di.registry.ArgumentRegistryInterface;
 import com.gasis.di.registry.PreferenceRegistryInterface;
-import com.gasis.di.validator.ValidatorInterface;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
@@ -11,12 +11,14 @@ public class ConstructorResolver implements ResolverInterface<Class, Constructor
 
     private final ArgumentRegistryInterface argumentRegistry;
     private final PreferenceRegistryInterface preferenceRegistry;
-    private final ValidatorInterface<Constructor<?>> dependencyValidator;
+    private final ResolverInterface<Constructor<?>, String[]> parameterNameResolver;
+    private final TypeProviderInterface notInstantiableTypeProvider;
 
-    public ConstructorResolver(ArgumentRegistryInterface argumentRegistry, PreferenceRegistryInterface preferenceRegistry, ValidatorInterface<Constructor<?>> dependencyValidator) {
+    public ConstructorResolver(ArgumentRegistryInterface argumentRegistry, PreferenceRegistryInterface preferenceRegistry, ResolverInterface<Constructor<?>, String[]> parameterNameResolver, TypeProviderInterface notInstantiableTypeProvider) {
         this.argumentRegistry = argumentRegistry;
         this.preferenceRegistry = preferenceRegistry;
-        this.dependencyValidator = dependencyValidator;
+        this.parameterNameResolver = parameterNameResolver;
+        this.notInstantiableTypeProvider = notInstantiableTypeProvider;
     }
 
     @Override
@@ -27,40 +29,32 @@ public class ConstructorResolver implements ResolverInterface<Class, Constructor
     }
 
     private Constructor<?> getValidConstructor(Class clazz, Constructor<?>[] constructors) {
+        Constructor<?> noParameterConstructor = getNoParameterConstructor(constructors);
+
+        if (noParameterConstructor != null) {
+            return noParameterConstructor;
+        }
+
         for (Constructor constructor : constructors) {
-            if (constructor.getParameterCount() == 0) {
-                continue;
-            }
-
-            if (!dependencyValidator.validate(clazz, constructor)) {
-                throw new RuntimeException("Circular dependency detected: type '" + clazz.getName() + "' parameters depend on the type itself, or type parameter objects themselves have a circular dependency");
-            }
-
             if (parametersForConstructorRegistered(clazz, constructor)) {
                 return constructor;
             }
         }
 
-        return getNoParameterConstructor(constructors);
+        return null;
     }
 
     private boolean parametersForConstructorRegistered(Class clazz, Constructor<?> constructor) {
         Parameter[] parameters = constructor.getParameters();
+        String[] parameterNames = parameterNameResolver.resolve(constructor);
 
-        for (Parameter parameter : parameters) {
-            if (preferenceRegistry != null && preferenceRegistry.hasPreference(parameter.getType())) {
-                continue;
-            }
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            String parameterName = parameterNames != null ? parameterNames[i] : null;
 
-            if (argumentRegistry != null
-                    && argumentRegistry.hasArgumentRegistered(parameter.getType(), parameter.getName())
-                    && argumentRegistry.getArgumentType(clazz, parameter.getName()).getName().equals(parameter.getType().getName())) {
-                continue;
-            }
-
-            Constructor<?>[] parameterConstructors = parameter.getType().getConstructors();
-
-            if (parameterConstructors.length == 0 || getNoParameterConstructor(parameterConstructors) != null) {
+            if (preferenceRegistered(parameter)
+                    || argumentRegistered(clazz, parameter, parameterName)
+                    || !isTypeInstantiable(parameter.getType())) {
                 continue;
             }
 
@@ -68,6 +62,27 @@ public class ConstructorResolver implements ResolverInterface<Class, Constructor
         }
 
         return true;
+    }
+
+    private boolean isTypeInstantiable(Class type) {
+        for (Class<?> notInstantiableType : notInstantiableTypeProvider.getTypes()) {
+            if (type == notInstantiableType) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean preferenceRegistered(Parameter parameter) {
+        return preferenceRegistry != null && preferenceRegistry.hasPreference(parameter.getType());
+    }
+
+    private boolean argumentRegistered(Class clazz, Parameter parameter, String parameterName) {
+        return parameterName != null
+                && argumentRegistry != null
+                && argumentRegistry.hasArgumentRegistered(clazz, parameterName)
+                && argumentRegistry.getArgumentType(clazz, parameterName).getName().equals(parameter.getType().getName());
     }
 
     private Constructor<?> getNoParameterConstructor(Constructor<?>[] constructors) {
