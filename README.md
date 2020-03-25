@@ -116,6 +116,7 @@
         @Override
         protected void initialize() {
             registerArgument(B.class, "number", Integer.class, 5);
+            registerArgument(C.class, "d", Class.class, D.class);
         }
     }
 ```
