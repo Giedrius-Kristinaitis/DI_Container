@@ -31,7 +31,7 @@ public class ArgumentResolver implements ResolverInterface<Constructor<?>, Objec
             String parameterName = parameterNames != null ? parameterNames[i] : null;
 
             if (parameterName != null && argumentRegistry.hasArgumentRegistered(constructor.getDeclaringClass(), parameterName)) {
-                arguments.add(argumentRegistry.getArgument(constructor.getDeclaringClass(), parameterName));
+                addArgumentToList(arguments, constructor, parameterName);
                 continue;
             }
 
@@ -39,5 +39,15 @@ public class ArgumentResolver implements ResolverInterface<Constructor<?>, Objec
         }
 
         return arguments.toArray();
+    }
+
+    private void addArgumentToList(List<Object> arguments, Constructor<?> constructor, String parameterName) {
+        Object argument = argumentRegistry.getArgument(constructor.getDeclaringClass(), parameterName);
+
+        if (argument instanceof Class<?>) {
+            argument = objectManager.instantiate((Class<?>) argument);
+        }
+
+        arguments.add(argument);
     }
 }
