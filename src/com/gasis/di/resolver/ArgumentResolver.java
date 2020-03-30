@@ -1,7 +1,7 @@
-package com.di.resolver;
+package com.gasis.di.resolver;
 
-import com.di.ObjectManagerInterface;
-import com.di.registry.ArgumentRegistryInterface;
+import com.gasis.di.ObjectManagerInterface;
+import com.gasis.di.registry.ArgumentRegistryInterface;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

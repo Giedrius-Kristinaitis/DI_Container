@@ -1,4 +1,4 @@
-package com.di.resolver;
+package com.gasis.di.resolver;
 
 public interface ResolverInterface<V, T> {
 

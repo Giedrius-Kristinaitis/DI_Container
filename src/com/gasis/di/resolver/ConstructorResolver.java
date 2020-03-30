@@ -1,8 +1,8 @@
-package com.di.resolver;
+package com.gasis.di.resolver;
 
-import com.di.provider.TypeProviderInterface;
-import com.di.registry.ArgumentRegistryInterface;
-import com.di.registry.PreferenceRegistryInterface;
+import com.gasis.di.provider.TypeProviderInterface;
+import com.gasis.di.registry.ArgumentRegistryInterface;
+import com.gasis.di.registry.PreferenceRegistryInterface;
 
 import java.lang.reflect.Constructor;
 

@@ -1,6 +1,6 @@
-package com.di.resolver;
+package com.gasis.di.resolver;
 
-import com.di.annotation.Parameters;
+import com.gasis.di.annotation.Parameters;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
