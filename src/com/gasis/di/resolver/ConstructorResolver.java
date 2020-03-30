@@ -1,11 +1,10 @@
-package com.gasis.di.resolver;
+package com.di.resolver;
 
-import com.gasis.di.provider.TypeProviderInterface;
-import com.gasis.di.registry.ArgumentRegistryInterface;
-import com.gasis.di.registry.PreferenceRegistryInterface;
+import com.di.provider.TypeProviderInterface;
+import com.di.registry.ArgumentRegistryInterface;
+import com.di.registry.PreferenceRegistryInterface;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
 
 public class ConstructorResolver implements ResolverInterface<Class, Constructor<?>> {
 
@@ -45,16 +44,16 @@ public class ConstructorResolver implements ResolverInterface<Class, Constructor
     }
 
     private boolean parametersForConstructorRegistered(Class clazz, Constructor<?> constructor) {
-        Parameter[] parameters = constructor.getParameters();
+        Class<?>[] parameterTypes = constructor.getParameterTypes();
         String[] parameterNames = parameterNameResolver.resolve(constructor);
 
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
             String parameterName = parameterNames != null ? parameterNames[i] : null;
 
-            if (preferenceRegistered(parameter)
-                    || argumentRegistered(clazz, parameter, parameterName)
-                    || !isTypeInstantiable(parameter.getType())) {
+            if (preferenceRegistered(parameterType)
+                    || argumentRegistered(clazz, parameterType, parameterName)
+                    || !isTypeInstantiable(parameterType)) {
                 continue;
             }
 
@@ -74,20 +73,20 @@ public class ConstructorResolver implements ResolverInterface<Class, Constructor
         return false;
     }
 
-    private boolean preferenceRegistered(Parameter parameter) {
-        return preferenceRegistry != null && preferenceRegistry.hasPreference(parameter.getType());
+    private boolean preferenceRegistered(Class<?> type) {
+        return preferenceRegistry != null && preferenceRegistry.hasPreference(type);
     }
 
-    private boolean argumentRegistered(Class clazz, Parameter parameter, String parameterName) {
+    private boolean argumentRegistered(Class clazz, Class<?> type, String parameterName) {
         return parameterName != null
                 && argumentRegistry != null
                 && argumentRegistry.hasArgumentRegistered(clazz, parameterName)
-                && argumentRegistry.getArgumentType(clazz, parameterName).getName().equals(parameter.getType().getName());
+                && argumentRegistry.getArgumentType(clazz, parameterName).getName().equals(type.getName());
     }
 
     private Constructor<?> getNoParameterConstructor(Constructor<?>[] constructors) {
         for (Constructor constructor : constructors) {
-            if (constructor.getParameterCount() == 0) {
+            if (constructor.getParameterTypes().length == 0) {
                 return constructor;
             }
         }

@@ -1,9 +1,8 @@
-package com.gasis.di.resolver;
+package com.di.resolver;
 
-import com.gasis.di.annotation.Parameters;
+import com.di.annotation.Parameters;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class ParameterNameResolver implements ResolverInterface<Constructor<?>, String[]> {
@@ -36,7 +35,7 @@ public class ParameterNameResolver implements ResolverInterface<Constructor<?>, 
 
         String[] annotationParameterNames = annotationParameters.value();
 
-        List<String> names = getParameterNamesForInnerClasses(constructor, constructor.getParameterCount() - annotationParameterNames.length);
+        List<String> names = getParameterNamesForInnerClasses(constructor, constructor.getParameterTypes().length - annotationParameterNames.length);
 
         Collections.addAll(names, annotationParameterNames);
 
@@ -45,10 +44,9 @@ public class ParameterNameResolver implements ResolverInterface<Constructor<?>, 
 
     private List<String> getParameterNamesForInnerClasses(Constructor<?> constructor, int count) {
         List<String> names = new ArrayList<String>();
-        Parameter[] constructorParameters = constructor.getParameters();
 
         for (int i = 0; i < count; i++) {
-            names.add(constructorParameters[i].getName());
+            names.add("arg" + i);
         }
 
         return names;
@@ -57,8 +55,8 @@ public class ParameterNameResolver implements ResolverInterface<Constructor<?>, 
     private List<String> getConstructorParameterNames(Constructor<?> constructor) {
         List<String> names = new ArrayList<String>();
 
-        for (Parameter parameter : constructor.getParameters()) {
-            names.add(parameter.getName());
+        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
+            names.add("arg" + i);
         }
 
         return names;

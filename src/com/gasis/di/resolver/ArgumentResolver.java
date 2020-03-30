@@ -1,10 +1,9 @@
-package com.gasis.di.resolver;
+package com.di.resolver;
 
-import com.gasis.di.ObjectManagerInterface;
-import com.gasis.di.registry.ArgumentRegistryInterface;
+import com.di.ObjectManagerInterface;
+import com.di.registry.ArgumentRegistryInterface;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +22,11 @@ public class ArgumentResolver implements ResolverInterface<Constructor<?>, Objec
     @Override
     public Object[] resolve(Constructor<?> constructor) {
         List<Object> arguments = new ArrayList<Object>();
-        Parameter[] parameters = constructor.getParameters();
+        Class<?>[] parameterTypes = constructor.getParameterTypes();
         String[] parameterNames = parameterNameResolver.resolve(constructor);
 
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
             String parameterName = parameterNames != null ? parameterNames[i] : null;
 
             if (parameterName != null && argumentRegistry.hasArgumentRegistered(constructor.getDeclaringClass(), parameterName)) {
@@ -35,7 +34,7 @@ public class ArgumentResolver implements ResolverInterface<Constructor<?>, Objec
                 continue;
             }
 
-            arguments.add(objectManager.instantiate(parameter.getType()));
+            arguments.add(objectManager.instantiate(parameterType));
         }
 
         return arguments.toArray();
