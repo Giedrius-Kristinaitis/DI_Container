@@ -1,4 +1,4 @@
-package com.gasis.di;
+package com.di;
 
 public interface ObjectManagerInterface {
 

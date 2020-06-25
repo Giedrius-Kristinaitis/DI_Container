@@ -1,6 +1,6 @@
-package com.gasis.di.provider;
+package com.di.provider;
 
-public class NotInstantiableTypeProvider implements TypeProviderInterface {
+public class NotInstantiableTypeProvider {
 
     private static final Class<?>[] NOT_INSTANTIABLE_TYPES = {
             Byte.class,
@@ -22,7 +22,6 @@ public class NotInstantiableTypeProvider implements TypeProviderInterface {
             boolean.class
     };
 
-    @Override
     public Class<?>[] getTypes() {
         return NOT_INSTANTIABLE_TYPES;
     }

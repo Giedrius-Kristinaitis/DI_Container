@@ -1,12 +1,11 @@
-package com.gasis.di;
+package com.di;
 
-import com.gasis.di.provider.NotInstantiableTypeProvider;
-import com.gasis.di.registry.ArgumentRegistryInterface;
-import com.gasis.di.registry.PreferenceRegistryInterface;
-import com.gasis.di.resolver.ArgumentResolver;
-import com.gasis.di.resolver.ConstructorResolver;
-import com.gasis.di.resolver.ParameterNameResolver;
-import com.gasis.di.resolver.ResolverInterface;
+import com.di.provider.NotInstantiableTypeProvider;
+import com.di.registry.ArgumentRegistryInterface;
+import com.di.registry.PreferenceRegistryInterface;
+import com.di.resolver.ArgumentResolver;
+import com.di.resolver.ConstructorResolver;
+import com.di.resolver.ParameterNameResolver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
@@ -17,9 +16,9 @@ public class ObjectManager implements ObjectManagerInterface {
 
     private final PreferenceRegistryInterface preferenceRegistry;
     private final ArgumentRegistryInterface argumentRegistry;
-    private final ResolverInterface<Class, Constructor<?>> constructorResolver;
-    private final ResolverInterface<Constructor<?>, Object[]> argumentResolver;
-    private final ResolverInterface<Constructor<?>, String[]> parameterNameResolver;
+    private final ConstructorResolver constructorResolver;
+    private final ArgumentResolver argumentResolver;
+    private final ParameterNameResolver parameterNameResolver;
     private final Map<Class, Object> instantiatedObjects;
 
     public ObjectManager(PreferenceRegistryInterface preferenceRegistry) {
@@ -38,6 +37,10 @@ public class ObjectManager implements ObjectManagerInterface {
 
     @Override
     public Object instantiate(Class clazz) {
+        if (clazz == ObjectManagerInterface.class || clazz == ObjectManager.class) {
+            return this;
+        }
+
         if (instantiatedObjects.containsKey(clazz)) {
             return instantiatedObjects.get(clazz);
         }

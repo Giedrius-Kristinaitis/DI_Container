@@ -1,11 +1,11 @@
-package com.gasis.di.resolver;
+package com.di.resolver;
 
-import com.gasis.di.annotation.Parameters;
+import com.di.annotation.Parameters;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public class ParameterNameResolver implements ResolverInterface<Constructor<?>, String[]> {
+public class ParameterNameResolver {
 
     private final Map<Constructor<?>, String[]> parameterNameCache;
 
@@ -13,7 +13,6 @@ public class ParameterNameResolver implements ResolverInterface<Constructor<?>, 
         this.parameterNameCache = new HashMap<Constructor<?>, String[]>();
     }
 
-    @Override
     public String[] resolve(Constructor<?> constructor) {
         if (parameterNameCache.containsKey(constructor)) {
             return parameterNameCache.get(constructor);

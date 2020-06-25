@@ -1,4 +1,4 @@
-package com.gasis.di.registry;
+package com.di.registry;
 
 import java.util.HashMap;
 import java.util.Map;

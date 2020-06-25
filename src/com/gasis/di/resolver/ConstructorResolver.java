@@ -1,26 +1,25 @@
-package com.gasis.di.resolver;
+package com.di.resolver;
 
-import com.gasis.di.provider.TypeProviderInterface;
-import com.gasis.di.registry.ArgumentRegistryInterface;
-import com.gasis.di.registry.PreferenceRegistryInterface;
+import com.di.provider.NotInstantiableTypeProvider;
+import com.di.registry.ArgumentRegistryInterface;
+import com.di.registry.PreferenceRegistryInterface;
 
 import java.lang.reflect.Constructor;
 
-public class ConstructorResolver implements ResolverInterface<Class, Constructor<?>> {
+public class ConstructorResolver {
 
     private final ArgumentRegistryInterface argumentRegistry;
     private final PreferenceRegistryInterface preferenceRegistry;
-    private final ResolverInterface<Constructor<?>, String[]> parameterNameResolver;
-    private final TypeProviderInterface notInstantiableTypeProvider;
+    private final ParameterNameResolver parameterNameResolver;
+    private final NotInstantiableTypeProvider notInstantiableTypeProvider;
 
-    public ConstructorResolver(ArgumentRegistryInterface argumentRegistry, PreferenceRegistryInterface preferenceRegistry, ResolverInterface<Constructor<?>, String[]> parameterNameResolver, TypeProviderInterface notInstantiableTypeProvider) {
+    public ConstructorResolver(ArgumentRegistryInterface argumentRegistry, PreferenceRegistryInterface preferenceRegistry, ParameterNameResolver parameterNameResolver, NotInstantiableTypeProvider notInstantiableTypeProvider) {
         this.argumentRegistry = argumentRegistry;
         this.preferenceRegistry = preferenceRegistry;
         this.parameterNameResolver = parameterNameResolver;
         this.notInstantiableTypeProvider = notInstantiableTypeProvider;
     }
 
-    @Override
     public Constructor<?> resolve(Class clazz) {
         Constructor<?>[] constructors = clazz.getConstructors();
 

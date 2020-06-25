@@ -1,4 +1,4 @@
-package com.gasis.di.registry;
+package com.di.registry;
 
 public interface ArgumentRegistryInterface {
 
