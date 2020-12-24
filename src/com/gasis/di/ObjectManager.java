@@ -46,6 +46,11 @@ public class ObjectManager implements ObjectManagerInterface {
         }
 
         Class<?> type = getTypePreference(clazz);
+        Object alreadyInstantiatedType = getAlreadyInstantiatedType(type);
+
+        if (alreadyInstantiatedType != null) {
+            return alreadyInstantiatedType;
+        }
 
         if ((type.isInterface() || Modifier.isAbstract(type.getModifiers())) && !preferenceRegistry.hasPreference(type)) {
             throw new RuntimeException("Cannot instantiate type '" + type.getName() + "': abstract type has no preference");
@@ -60,6 +65,18 @@ public class ObjectManager implements ObjectManagerInterface {
         }
 
         return getInstance(type, constructorCount > 0, constructor);
+    }
+
+    private Object getAlreadyInstantiatedType(Class type) {
+        for (Object object: instantiatedObjects.values()) {
+            if (object.getClass() != type) {
+                continue;
+            }
+
+            return object;
+        }
+
+        return null;
     }
 
     private Object getInstance(Class type, boolean hasConstructors, Constructor constructor) {
@@ -90,3 +107,4 @@ public class ObjectManager implements ObjectManagerInterface {
         return preferenceRegistry.getPreference(clazz);
     }
 }
+
